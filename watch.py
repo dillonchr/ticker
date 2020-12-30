@@ -20,10 +20,11 @@ def should_buy():
     ltc = get(prices, "litecoin.usd", 0)
     btc = get(prices, "bitcoin.usd", 0)
     eth = get(prices, "ethereum.usd", 0)
+    update = f"LTC ${ltc} ETH ${eth} BTC ${btc}"
+
     if 137 < ltc:
-        trade_alarm()
+        trade_alarm(update)
     else:
-        update = f"LTC ${ltc} ETH ${eth} BTC ${btc}"
         if last_update != update:
             last_update = update
             print(f"{update} {datetime.datetime.now()}")
@@ -36,8 +37,13 @@ def get_shares():
         data = share_data.read()
         return json.loads(data)
 
-def trade_alarm():
-    os.system(f"say \"do be trading my man\"")
+def trade_alarm(update):
+    #os.system(f"say \"do be trading my man\"")
+    with open(".discord", "r") as config:
+        webhook_url = config.read().strip()
+        with requests.post(webhook_url, json={"content": "You should trade! {}".format(update)}, headers={"Content-Type": "application/json"}) as r:
+            if not r.ok:
+                print("{}".format(r.text))
 
 
 while True:
