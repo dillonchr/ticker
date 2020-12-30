@@ -21,7 +21,7 @@ def should_buy():
     btc = get(prices, "bitcoin.usd", 0)
     eth = get(prices, "ethereum.usd", 0)
     if 137 < ltc:
-        say_update("Oh my god. You have to trade now!")
+        trade_alarm()
     else:
         update = f"LTC ${ltc} ETH ${eth} BTC ${btc}"
         if last_update != update:
@@ -36,8 +36,8 @@ def get_shares():
         data = share_data.read()
         return json.loads(data)
 
-def say_update(update):
-    os.system(f"say \"{update}\"")
+def trade_alarm():
+    os.system(f"say \"do be trading my man\"")
 
 
 while True:
