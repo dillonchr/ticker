@@ -6,36 +6,48 @@ import json
 import requests
 from pydash import get
 
-URL = "https://api.coingecko.com/api/v3/simple/price?ids=litecoin%2Cethereum%2Cbitcoin&vs_currencies=usd"
+def get_url(shares):
+    """ fetch coingecko url for relevant coins """
+    return "https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&ids=" + "%2C".join(shares.keys())
 
-def get_prices():
-    with requests.get(URL) as r:
+def get_prices(shares):
+    with requests.get(get_url(shares)) as r:
         return r.json()
 
 last_update = ""
 
 def should_buy():
     global last_update
-    prices = get_prices()
-    ltc = get(prices, "litecoin.usd", 0)
-    btc = get(prices, "bitcoin.usd", 0)
-    eth = get(prices, "ethereum.usd", 0)
-    update = f"LTC ${ltc} ETH ${eth} BTC ${btc}"
+    shares = get_shares()
+    prices = get_prices(shares)
 
-    if 137 < ltc:
-        trade_alarm(update)
-    else:
-        if last_update != update:
-            last_update = update
-            print(f"{update} {datetime.datetime.now()}")
-            shares = get_shares()
-            value = shares.get("eth", 0) * eth + shares.get("btc", 0) * btc + shares.get("ltc", 0) * ltc
-            print(f"portfolio total: {value}")
+    total_value = 0.0
+    update = ""
+
+    for coin, value in prices.items():
+        usd = get(value, "usd", 0)
+        total_value += usd * shares.get(coin, 0)
+        update += " $".join([coin, str(usd)]) + " -- "
+
+    if last_update != update:
+        last_update = update
+        print("{}\n{}".format(datetime.datetime.now(), update))
+        print("portfolio total: ${}".format(total_value))
 
 def get_shares():
     with open("shares.json", "r") as share_data:
         data = share_data.read()
         return json.loads(data)
+
+def get_current_portfolio_value():
+    shares = get_shares()
+    prices = get_prices(shares)
+    total_value = 0.0
+
+    for coin, value in prices.items():
+        usd = get(value, "usd", 0)
+        total_value += usd * shares.get(coin, 0)
+    return total_value
 
 def trade_alarm(update):
     #os.system(f"say \"do be trading my man\"")
@@ -45,7 +57,7 @@ def trade_alarm(update):
             if not r.ok:
                 print("{}".format(r.text))
 
-
-while True:
-    should_buy()
-    time.sleep(30)
+if __name__ == "__main__":
+    while True:
+        should_buy()
+        time.sleep(30)
