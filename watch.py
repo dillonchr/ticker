@@ -34,13 +34,28 @@ def should_buy():
         print("{}\n{}".format(datetime.datetime.now(), update))
         print("portfolio total: ${}".format(total_value))
 
-def get_shares():
-    with open("shares.json", "r") as share_data:
-        data = share_data.read()
-        return json.loads(data)
+last_shares_res = None
 
-def get_current_portfolio_value():
-    shares = get_shares()
+def get_shares():
+    global last_shares_res
+
+    if last_shares_res:
+        return last_shares_res
+
+    with requests.get(os.environ["SHARES_URL"]) as res:
+        share_data = {}
+        rows = res.text
+        for row in rows.split("\r\n"):
+            split = row.split("\t")
+            if len(split) > 1:
+                share_data[split[0]] = float(split[1])
+
+        last_shares_res = share_data
+        return share_data
+
+def get_current_portfolio_value(shares):
+    if not shares:
+        shares = get_shares()
     prices = get_prices(shares)
     total_value = 0.0
 
