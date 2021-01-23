@@ -15,7 +15,7 @@ def get_portfolio_breakdown():
     increase_pct = (total_balance - total_capital) / total_capital
     return {
         "value": total_balance,
-        "percent_change": increase_pct,
+        "percent_change": increase_pct * 100,
         "budget_value": budget + (budget * increase_pct)
     }
 
