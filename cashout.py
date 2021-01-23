@@ -6,16 +6,22 @@ def get_splits():
     with open("splits.json", "r") as data:
         return json.loads(data.read())
 
-if __name__ == "__main__":
+def get_portfolio_breakdown():
     splits = get_shares()
     total_balance = get_current_portfolio_value(splits)
-    print("Total portfolio value : {}".format(total_balance))
-
     budget = splits.get("budget", 0)
     paycheck = splits.get("paycheck", 0)
-
     total_capital = budget + paycheck
     increase_pct = (total_balance - total_capital) / total_capital
-    print("Total balance increase: {}".format(increase_pct))
-    print("Total budget balance  : {}".format(budget + (budget * increase_pct)))
+    return {
+        "value": total_balance,
+        "percent_change": increase_pct,
+        "budget_value": budget + (budget * increase_pct)
+    }
+
+if __name__ == "__main__":
+    portfolio = get_portfolio_breakdown()
+    print("Total portfolio value : {}".format(portfolio.get("value")))
+    print("Total balance increase: {}".format(portfolio.get("percent_change")))
+    print("Total budget balance  : {}".format(portfolio.get("budget_value")))
 

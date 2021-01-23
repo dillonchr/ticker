@@ -5,6 +5,7 @@ import requests
 from pydash import get
 
 from watch import get_shares
+from cashout import get_portfolio_breakdown
 
 
 def print_percentage(percentage):
@@ -39,3 +40,12 @@ if "__main__" == __name__:
     for coin in get_shares().keys():
         if coin != "budget" and coin != "paycheck":
             print_coin_data(coin)
+    print("")
+    print("<=>portfolio")
+    print("total|=|budget")
+    portfolio = get_portfolio_breakdown()
+    print("${}|=|{}%|=|${}".format(
+        round(portfolio.get("value"), 2),
+        round(portfolio.get("percent_change"), 2),
+        round(portfolio.get("budget_value"), 2)
+    ))
