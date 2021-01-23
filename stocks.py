@@ -11,7 +11,7 @@ from cashout import get_portfolio_breakdown
 def print_percentage(percentage):
     """ pretty print """
     percentage = round(percentage, 2)
-    return "{} {}%".format("▲" if 0 < percentage else "▽", percentage)
+    return "{}{}%".format("+" if 0 < percentage else "", percentage)
 
 
 def print_price(price):
