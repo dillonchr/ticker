@@ -36,6 +36,7 @@ def print_coin_data(coin):
 
 if "__main__" == __name__:
     print("24hr|=|{}|=|1hr".format(datetime.datetime.now().strftime("%m/%d/%y")))
+    print("<=>{}".format(datetime.datetime.now().strftime("%H:%M")))
     print("")
     for coin in get_shares().keys():
         if coin != "budget" and coin != "paycheck":
