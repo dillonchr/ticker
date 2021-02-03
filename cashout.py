@@ -21,7 +21,8 @@ def get_portfolio_breakdown():
 
 if __name__ == "__main__":
     portfolio = get_portfolio_breakdown()
-    print("Total portfolio value : {}".format(portfolio.get("value")))
-    print("Total balance increase: {}".format(portfolio.get("percent_change")))
-    print("Total budget balance  : {}".format(portfolio.get("budget_value")))
+    total = round(portfolio.get("value"))
+    pct = round(portfolio.get("percent_change"), 2)
+    budget = round(portfolio.get("budget_value"))
+    print("{} / {}% / {}".format(total, pct, budget))
 
